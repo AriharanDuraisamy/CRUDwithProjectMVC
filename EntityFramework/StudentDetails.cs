@@ -7,7 +7,7 @@ namespace EntityFramework
     {
         public StudentDetails()
         {
-
+            Subject = "-1";
             DOB = DateTime.Now;
         }
 

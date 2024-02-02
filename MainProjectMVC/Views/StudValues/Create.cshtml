@@ -1,0 +1,283 @@
+﻿@model EntityFramework.StudentDetails
+
+@{
+    ViewData["Title"] = "Create";
+}
+@{ 
+    var method = "Create";
+    if (Model.StudentID > 0)
+    {
+        method = "Update";
+    }
+}
+
+<h1>@method</h1>
+
+<h4>StudentDetails</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name"  class="control-label"></label>
+                <input asp-for="Name"  class="form-control" placeholder="enter username" />
+                <input asp-for="StudentID" id="StudentID" type="hidden" class="form-control" />
+                <span asp-validation-for="Name" id="chkname"  class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DOB" class="control-label"></label>
+                <input asp-for="DOB" class="form-control" />
+                <span asp-validation-for="DOB" id="chkdob" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Age" class="control-label"></label>
+                <input asp-for="Age" class="form-control" placeholder="enter age" />
+                
+                <span asp-validation-for="Age" id="chkage" class="text-danger"></span>
+            </div>
+            <div class="radio-btn label">
+                <label>Gender</label><br />
+
+                <input asp-for="Gender" type="radio" name="radio" id="male" value="male">
+                <label asp-for="Gender" for="radio">Male</label>
+                <input asp-for="Gender" type="radio" name="radio" id="female" value="female">
+                <label asp-for="Gender" for="radio">Female</label>
+
+            </div>
+            <div>
+                <span asp-validation-for="Gender" id="errgender" class="text-danger"></span>
+            </div>
+
+            @*<div class="form-group">
+            <label asp-for="Gender" class="control-label"></label>
+            <input asp-for="Gender" class="form-control" />
+            <span asp-validation-for="Gender" class="text-danger"></span>
+        </div>*@
+            <div class="form-group">
+                <label asp-for="MobileNum" class="control-label"></label>
+                <input asp-for="MobileNum" class="form-control" placeholder="enter phnnumber"  />
+                <span asp-validation-for="MobileNum" id="chknum" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Emailid" class="control-label"></label>
+                <input asp-for="Emailid"  class="form-control" placeholder="enter emailid"/>
+                <span asp-validation-for="Emailid" id="chkemail" class="text-danger"></span>
+            </div>
+            @*<div class="form-group">
+                @Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-12">
+                    Male
+                    @Html.DropDownListFor(model => model.Subject, "")
+                    Female
+                    @Html.DropDownListFor(model => model.Subject, "Female")
+                </div>
+            </div>*@
+
+            <div class="form-group">
+                <label asp-for="Subject" class="control-label"></label>
+                <select  id="drpsubject"  asp-for="Subject" class="form-control" ></select>
+                <input id="hdnsub" type="hidden" asp-for="Subject" />
+                <span asp-validation-for="Subject" id="drpsub"  class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="button"   id="create" value="@method" class="btn btn-outline-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script>
+
+    $(document).ready(function () {
+
+        //code to do the validation and send the data to server
+        $("#create").click(function () {
+            if (validation()) {
+                var name = document.getElementById("Name").value;
+                var dob = document.getElementById("DOB").value;
+                var age = document.getElementById("Age").value;
+                var studentid = document.getElementById("StudentID").value;
+                var num = document.getElementById("MobileNum").value;
+                var email = document.getElementById("Emailid").value;
+                var spansub = document.getElementById("drpsubject");
+                var sub = spansub.options[spansub.selectedIndex].value;
+                var radios = document.getElementsByName("radio");
+                var radgender = "";
+                for (var i = 0, length = radios.length; i < length; i++) {
+                    if (radios[i].checked) {
+                        radgender = radios[i].value;
+                        break;
+                    }
+                }
+
+                var resultdata = {
+                    "StudentID": studentid,
+                    "Name": name,
+                    "DOB": dob,
+                    "Age": age,
+                    "Gender": radgender,
+                    "MobileNum": num,
+                    "Emailid": email,
+                    "Subject": sub,
+                };
+
+
+
+                debugger;
+                $.ajax({
+                    type: "POST",
+                    url: "/StudValues/Creates",
+                    data: resultdata,
+                    success: function (data) {
+                        alert("success");
+                        window.location.href = "/studvalues/index";
+                    },
+                });
+            }
+        });
+
+        //getting the subject data from server and binding it in the Dropdown
+        $.ajax({
+            type: "GET",
+            url: "/api/subjects",
+            data: "{}",
+            success: function (data) {
+                debugger;
+                var string = '<option value="-1">--- Please Select ---</option>';
+                for (var i = 0; i < data.length; i++) {
+                    string += '<option value="' + data[i].id + '">' + data[i].subjectname + '</option>';
+                }
+                $("#drpsubject").html(string);
+
+                $("#drpsubject").val($("#hdnsub").val());
+            }
+        });
+    });
+
+
+    debugger;
+    function validation()
+    {
+        var name = document.getElementById("Name").value;
+        var spanname = document.getElementById("chkname");
+
+        var age = document.getElementById("Age").value;
+        var spanage = document.getElementById("chkage");
+
+
+        var num = document.getElementById("MobileNum").value;
+        var spannum = document.getElementById("chknum");
+
+        var email = document.getElementById("Emailid").value;
+        var mailformat = new RegExp( /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/);
+        var spanemail = document.getElementById("chkemail");
+
+        var dob = document.getElementById("DOB").value;
+        var spandob = document.getElementById("chkdob");
+
+
+
+
+
+        var isvalid = true;
+        debugger;
+        //name validation
+        if (name == "" || name.length == 0)
+        {
+            spanname.innerText = "please enter your name";
+            spanname.style.display = "block";
+            isvalid = false;
+        }
+        else
+        {
+            spanname.style.display = "none";
+        }
+
+        debugger;
+       //age validation
+        if (age === "" || age < 18) {
+            spanage.innerText = "please enter your age";
+            spanage.style.display = "block";
+            isvalid = false;
+        }
+        else
+        {
+            spanage.style.display = "none";
+        }
+        debugger;
+        //mobile validation
+        if (num === "" || num.length != 10) {
+            spannum.innerText = "please enter your num(must be 10 digit)";
+            spannum.style.display = "block";
+            isvalid = false;
+        }
+        else {
+            spannum.style.display = "none";
+        }
+        debugger;
+        //email validation
+
+        if (email == "" || !(mailformat.test(email))) {
+            spanemail.innerText = "please enter your emailid";
+            spanemail.style.display = "block";
+            isvalid = false;
+        }
+        else {
+            spanemail.style.display = "none";
+        }
+        debugger;
+        //dob validation
+        if (dob == "" || dob == "0001-01-01T00:00") {
+            spandob.innerText = "please enter your dob";
+            spandob.style.display = "block";
+            isvalid = false;
+        }
+        else {
+            spandob.style.display = "none";
+        }
+        debugger;
+        //radio validation
+        var radios = document.getElementsByName("radio");
+        var value = ""
+        for (var i = 0, length = radios.length; i < length; i++) {
+            if (radios[i].checked) {
+                value = radios[i].value;
+                break;
+            }
+        }
+
+        var gender = document.getElementById("errgender");
+        if (!value) {
+            gender.innerText = "Please Select Your Gender";
+            gender.style.display = "block";
+        }
+        else {
+            gender.style.display = "none";
+        }
+
+
+        //subject validation
+        var spansub = document.getElementById("drpsubject");
+        var sub = spansub.options[spansub.selectedIndex].value;
+        var spansubject = document.getElementById("drpsub");
+        if (sub == "" || sub == -1 || sub == 0) {
+            spansub.style.borderColor = "red";
+            spansubject.innerText = "please select subject";
+            spansubject.style.display = "block";
+            isvalid = false;
+        }
+        else {
+            spansub.style.borderColor = "black";
+            spansubject.style.display = "none";
+        }
+        return isvalid;
+    }
+
+    </script>
+}

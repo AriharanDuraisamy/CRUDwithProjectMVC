@@ -27,7 +27,8 @@
             </div>
             <div class="form-group">
                 <label asp-for="DOB" class="control-label"></label>
-                <input asp-for="DOB" class="form-control" />
+                <input asp-for="DOB" type="text"  class="form-control"  />
+                
                 <span asp-validation-for="DOB" id="chkdob" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -94,11 +95,49 @@
 @section Scripts {
     <script>
 
-    $(document).ready(function () {
+        $(document).ready(function () {
+           
+            $('#DOB').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                autoApply: true,
+                autoUpdateInput: true,
+                minYear: 1980,
+                maxYear: parseInt(moment().format('YYYY'), 10) + 2
+            }, function (start, end, label) {
+                var years = moment().diff(start, 'years');
+                //    alert("You are " + years + " years old!");
+            });
 
+
+            ////Date range picker with time picker
+            $('#DOB').on('apply.daterangepicker', function (ev, picker) {
+
+                $('#hdnDOB').val($('#DOB').val());
+            });
+            $("#DOB").on('change keyup paste mouseup', function () {
+                $('#hdnDateofBirth').val($('#DateofBirth').val());
+            });
+
+        
+        
         //code to do the validation and send the data to server
         $("#create").click(function () {
             if (validation()) {
+                @*$(document).ready(function () {
+                    $("#create").click(function () {
+                        // Get values from form fields
+                        var email = document.getElementById("Emailid").value;
+                        var num = $("#phone").val();
+
+                        // Perform client-side validation
+                        if (emailExists(email) || phoneExists(phone)) {
+                            // Display error message
+                            $("#errorMessage").text("Email or phone number already exists. Please provide a unique email and phone number.");
+                            // Prevent form submission
+                            return false;
+                        }
+                    });*@
                 var name = document.getElementById("Name").value;
                 var dob = document.getElementById("DOB").value;
                 var age = document.getElementById("Age").value;
@@ -140,7 +179,9 @@
                     },
                 });
             }
+
         });
+
 
         //getting the subject data from server and binding it in the Dropdown
         $.ajax({
@@ -158,6 +199,7 @@
                 $("#drpsubject").val($("#hdnsub").val());
             }
         });
+        
     });
 
 
@@ -278,6 +320,9 @@
         }
         return isvalid;
     }
+
+
+
 
     </script>
 }

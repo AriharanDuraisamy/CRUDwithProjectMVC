@@ -83,8 +83,8 @@ namespace MainProjectMVC.Controllers
 
         // POST: StudValuesController/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Deleteid(int StudentID)
+       // [ValidateAntiForgeryToken
+        public ActionResult Deletes(int StudentID)
         {
 
             try
@@ -129,5 +129,22 @@ namespace MainProjectMVC.Controllers
             subjects.Add(final);
             return subjects;
         }
+        //email validation controller
+
+        /*[HttpPost]
+        public ActionResult CheckEmailExists(string email)
+        {
+            bool emailExists;
+            using (var dbcontxt = new Dbcontxt())
+            {
+                
+            }
+
+                /// Perform database query to check if the email already exists
+
+
+                // Return JSON response indicating whether the email exists
+                return Json(new { exists = emailExists });
+        }*/
     }
 }
